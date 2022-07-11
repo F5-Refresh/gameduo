@@ -29,6 +29,7 @@ def get_env_variable(var_name):
         error_msg = f'Set the {var_name} environment variable'
         raise ImproperlyConfigured(error_msg)
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -42,15 +43,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEBUG = get_env_variable('DEBUG')
 
-SECRET_KEY    = get_env_variable('SECRET_KEY')
-ALLOWED_HOSTS = (get_env_variable('ALLOWED_HOSTS'), )
+SECRET_KEY = get_env_variable('SECRET_KEY')
+ALLOWED_HOSTS = (get_env_variable('ALLOWED_HOSTS'),)
 
-APPEND_SLASH  = False
+APPEND_SLASH = False
 
 # Application definition
 
 PROJECT_APPS = [
-
+    'user',
+    'raid',
 ]
 
 THIRD_PARTY_APPS = [
@@ -59,14 +61,18 @@ THIRD_PARTY_APPS = [
     'rest_framework',
 ]
 
-INSTALLED_APPS = [
-    # 'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',  
-] + THIRD_PARTY_APPS + PROJECT_APPS
+INSTALLED_APPS = (
+    [
+        # 'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+    ]
+    + THIRD_PARTY_APPS
+    + PROJECT_APPS
+)
 
 
 MIDDLEWARE = [
@@ -136,7 +142,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 ##CORS
-CORS_ORIGIN_ALLOW_ALL  = True
+CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = (
@@ -187,12 +193,4 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SWAGGER_SETTINGS = {
-   'SECURITY_DEFINITIONS': {
-      'Bearer': {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header'
-      }
-   }
-}
+SWAGGER_SETTINGS = {'SECURITY_DEFINITIONS': {'Bearer': {'type': 'apiKey', 'name': 'Authorization', 'in': 'header'}}}
