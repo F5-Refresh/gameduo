@@ -47,7 +47,11 @@ class User(AbstractBaseUser, TimeStampModel):
     ]
 
     def __str__(self):
+<<<<<<< HEAD
         return f'{self.nickname}({self.user_id})'
+=======
+        return f'{self.nickname}({self.email})'
+>>>>>>> 859e607 (feat: DB 모델링 적용 (#2))
 
     def has_perm(self, perm, obj=None):
         return True
