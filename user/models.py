@@ -47,7 +47,7 @@ class User(AbstractBaseUser, TimeStampModel):
     ]
 
     def __str__(self):
-        return f'{self.nickname}({self.email})'
+        return f'{self.nickname}({self.user_id})'
 
     def has_perm(self, perm, obj=None):
         return True
