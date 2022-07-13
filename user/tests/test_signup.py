@@ -6,6 +6,12 @@ from user.models import User
 
 
 class SignUpTest(APITestCase):
+    """회원가입 테스트
+
+    Writer: 전기원
+    Date: 2022-07-13
+
+    """
  
     # 회원가입 성공 테스트입니다.
     def test_create_signup(self):
