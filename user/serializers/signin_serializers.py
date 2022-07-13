@@ -9,7 +9,8 @@ class LoginSerializer(serializers.Serializer):
     Writer: 남효정
     Date: 2022-07-12
 
-    라이브러리의 기본 시리얼라이저를 현재 프로젝트의 User 모델에 맞도록 커스텀합니다.
+    라이브러리의 기본 시리얼라이저 대신,
+    현재 프로젝트의 User 모델에 맞는 커스텀 시리얼라이저를 구현합니다.
     """
 
     account = serializers.CharField(max_length=100, required=True)
