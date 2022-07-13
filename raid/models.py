@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from core.models import TimeStampModel
 from django.db import models
 
@@ -8,8 +10,11 @@ class RaidHistory(TimeStampModel):
     enter_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(null=True)
     level = models.PositiveIntegerField()
-    raid_status = models.BooleanField(default=False)
     delete_flag = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'raid_history'
+
+    def game_over(self):
+        self.end_time = datetime.now()
+        self.save()

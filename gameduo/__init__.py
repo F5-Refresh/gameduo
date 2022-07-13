@@ -8,8 +8,6 @@ data = json.loads(requests.get('https://dmpilf5svl7rv.cloudfront.net/assignment/
 cache.set('limit_time', data['bossRaids'][0]['bossRaidLimitSeconds'])
 for level_data in data['bossRaids'][0]['levels']:
     cache.set(f"level{level_data['level']}", level_data['score'])  # 캐싱
-cache.set('is_use', False)
 
-print(cache.get('level0'))
-print(cache.get('level1'))
-print(cache.get('level2'))
+# 동시 유저입장을 위한 플래그
+cache.set('is_use', False)
