@@ -25,4 +25,5 @@ class LoginSerializer(serializers.Serializer):
         if not user.check_password(data['password']):
             raise serializers.ValidationError({'detail': '올바른 패스워드가 아닙니다.'})
 
+        data['user'] = user
         return data
