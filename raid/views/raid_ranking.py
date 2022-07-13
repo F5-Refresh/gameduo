@@ -1,11 +1,14 @@
 from django.core.cache import cache
-from django.db.models import F, Sum
+from django.db.models import F, FilteredRelation, OuterRef, Q, Subquery, Sum
+from django.db.models.expressions import Window
+from django.db.models.functions import Rank
 from drf_yasg.utils import swagger_auto_schema
 from raid.models import RaidHistory
 from raid.serializers.raid_serializer import BossRaidRakingSerializer
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.views import APIView, status
+from user.models import User
 
 
 class BossRaidRankingView(APIView):
@@ -18,35 +21,36 @@ class BossRaidRankingView(APIView):
 
     '''
 
-    # TODO: mysql 5.7에서 rank와 rownum을 지원을 하지 않음. top10만 뽑는건 큰 문제가 되지 않으나
-    # TODO: myranking에서의 rank를 어떻게 나타 낼지 고민 해봐야됨
+    # TODO: Django ORM의 Subquery문제로 my-ranking 구현 x
+    # TODO: 멘토님꼐 질문 남겨놓음
     def get(self, request):
 
         cache_data = cache.get('ranking')
-        print(cache_data)
         if not cache_data:
             try:
+
                 ranking_data = (
                     RaidHistory.objects.values('user')
-                    .annotate(total_score=Sum('score'), user_id=F('user__user_id'))
-                    .order_by('-total_score')
-                )
+                    .annotate(total_score=Sum('score'), nickname=F('user__nickname'))
+                    .annotate(rank=Window(expression=Rank(), order_by=F('total_score').desc()))
+                )[:100]
 
-                my_ranking = (
-                    RaidHistory.objects.filter(user__id='43aa2e78-6a9f-4a15-91d8-ee5011f3')
-                    .values('user')
-                    .annotate(total_score=Sum('score'))
-                )
+                # my_ranking = (
+                #     RaidHistory.objects.values('user')
+                #     .annotate(total_score=Sum('score'), nickname=F('user__nickname'))
+                #     .annotate(rank=Window(expression=Rank(), order_by=F('total_score').desc()))
+                # )
 
-                for i in range(len(ranking_data)):
-                    ranking_data[i]['ranking'] = i + 1
-
-                top_ranking_serialize = BossRaidRakingSerializer(ranking_data, many=True)
-
-                cache.set('ranking', top_ranking_serialize.data, 360)
-                cache_data = top_ranking_serialize.data
+                total_ranking_serialize = BossRaidRakingSerializer(ranking_data, many=True)
+                # my_ranking_serialize = BossRaidRakingSerializer(my_ranking, many=True)
+                # cache_data = {
+                #     'top_ranker_info_list': total_ranking_serialize.data,
+                #     'my_ranking': my_ranking_serialize.data,
+                # }
+                cache_data = total_ranking_serialize.data
+                cache.set('ranking', cache_data, 360)
             except Exception as ex:
                 print(ex)
                 raise APIException(detail='error occurred', code=ex)
 
-        return Response(data={"ranking": cache_data}, status=status.HTTP_200_OK)
+        return Response(cache_data, status=status.HTTP_200_OK)

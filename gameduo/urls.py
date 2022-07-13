@@ -18,6 +18,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('dj_rest_auth.urls')),
     path('users', include('user.urls')),
+    path('raid', include('raid.urls')),
 ]
 
 urlpatterns += [
