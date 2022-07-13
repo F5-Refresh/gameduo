@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from user.serializers.signup_serializers import SignUpSerializer
 
 
+# 회원가입 API 뷰입니다.
 class SignUpView(APIView):
 
     permission_classes = (AllowAny,)

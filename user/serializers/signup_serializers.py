@@ -4,6 +4,7 @@ from rest_framework import serializers
 from user.models import User
 
 
+# 회원가입 serializer 입니다.
 class SignUpSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
@@ -14,9 +15,9 @@ class SignUpSerializer(serializers.ModelSerializer):
         password_re =re.compile('^(?=.{8,15}$)(?=.*[a-z])(?=.*[0-9]).*$')
         
         if not re.match(password_re, password):
-            raise serializers.ValidationError({"password": ["올바른 비밀번호를 입력하세요."]})
+            raise serializers.ValidationError({"password": ["비밀번호는 8~15자의 영소문자와 숫자로 이루어져야합니다."]})
 
-        #  validated_data를 기반으로 User객체를 생성
+        # validated_data를 기반으로 User객체를 생성
         user = User.objects.create_user(**validated_data)
         return user
         
