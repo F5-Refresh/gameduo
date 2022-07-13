@@ -6,6 +6,14 @@ from user.models import User
 
 class LoginSerializer(serializers.Serializer):
 
+    """로그인 serializer
+
+    Writer: 남효정
+    Date: 2022-07-12
+
+    라이브러리의 기본 시리얼라이저를 현재 프로젝트의 User 모델에 맞도록 커스텀합니다.
+    """
+
     account = serializers.CharField(max_length=100, required=True)
     password = serializers.CharField(required=True)
 
