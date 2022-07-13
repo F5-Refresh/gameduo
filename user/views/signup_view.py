@@ -8,6 +8,13 @@ from user.serializers.signup_serializers import SignUpSerializer
 
 # 회원가입 API 뷰입니다.
 class SignUpView(APIView):
+    """회원가입 API 뷰
+
+    Writer: 전기원
+    Date: 2022-07-12
+
+    회원가입을 구현합니다.
+    """
 
     permission_classes = (AllowAny,)
 
