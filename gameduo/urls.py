@@ -14,7 +14,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-
+    path('users', include('user.urls')),
 ]
 
 urlpatterns += [
