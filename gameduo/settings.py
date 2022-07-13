@@ -127,7 +127,7 @@ REST_FRAMEWORK = {
 REST_USE_JWT = True
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -136,7 +136,7 @@ SIMPLE_JWT = {
 AUTH_USER_MODEL = 'user.User'
 
 REST_AUTH_SERIALIZERS = {
-    'LOGIN_SERIALIZER': 'user.serializers.LoginSerializer',
+    'LOGIN_SERIALIZER': 'user.serializers.signin_serializers.LoginSerializer',
 }
 
 
@@ -211,7 +211,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

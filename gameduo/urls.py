@@ -15,14 +15,9 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-<<<<<<< HEAD
-    path('users', include('user.urls')),
-=======
     path('admin/', admin.site.urls),
-    path('', include('dj_rest_auth.urls')),
-    # path('accounts/', include('dj_rest_auth.registration.urls')),
-    # path('users', include('user.urls')),
->>>>>>> 38910fb (로그인 시리얼라이저 추가 (#4))
+    path('users/', include('dj_rest_auth.urls')),
+    path('users', include('user.urls')),
 ]
 
 urlpatterns += [

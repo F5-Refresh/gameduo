@@ -6,12 +6,12 @@ from django.db import models
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, user_id, nickname, password=None):
-        if not user_id:
+    def create_user(self, account, nickname, password=None):
+        if not account:
             raise ValueError('Users must have an user id')
 
         user = self.model(
-            user_id=user_id,
+            account=account,
             nickname=nickname,
         )
 
@@ -20,9 +20,9 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, user_id, nickname, password=None):
+    def create_superuser(self, account, nickname, password=None):
         user = self.create_user(
-            user_id=user_id,
+            account=account,
             password=password,
             nickname=nickname,
         )
@@ -34,20 +34,20 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, TimeStampModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user_id = models.CharField(max_length=100, unique=True)
+    account = models.CharField(max_length=100, unique=True)
     nickname = models.CharField(max_length=50, unique=True)
     is_admin = models.BooleanField(default=False)
     delete_flag = models.BooleanField(default=False)
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'user_id'
+    USERNAME_FIELD = 'account'
     REQUIRED_FIELDS = [
         'nickname',
     ]
 
     def __str__(self):
-        return f'{self.nickname}({self.user_id})'
+        return f'{self.nickname}({self.account})'
 
     def has_perm(self, perm, obj=None):
         return True
