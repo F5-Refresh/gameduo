@@ -5,7 +5,7 @@ from user.models import User
 
 class LoginOUTUserTest(APITestCase):
 
-    '''
+    """
     로그인, 로그아웃, JWT 발급 테스트 코드
 
     Writer: 남효정
@@ -15,13 +15,13 @@ class LoginOUTUserTest(APITestCase):
     로그아웃: [POST] /users/logout/
 
     dj-rest-auth 사용으로 자동으로 생성된 url입니다. (후행슬래시 존재)
-    '''
+    """
 
     def setUp(self):
 
-        '''
+        """
         초기 세팅을 위한 데이터들입니다.
-        '''
+        """
 
         # 회원가입을 위한 데이터입니다.
         self.data = {'account': 'testcase1', 'nickname': 'testcase1', 'password': 'testcase1'}
@@ -40,12 +40,12 @@ class LoginOUTUserTest(APITestCase):
 
     def test_success_login(self):
 
-        '''
+        """
         [성공] status_code = 200
 
         self.success_data(유효한 데이터)로 테스르를 진행합니다.
         로그인 시 access_token, refresh_token이 잘 발급되었는지 확인합니다.
-        '''
+        """
 
         response = self.client.post('/users/login/', self.success_data)
 
@@ -61,12 +61,12 @@ class LoginOUTUserTest(APITestCase):
 
     def test_fail_login_wrong_account(self):
 
-        '''
+        """
         [실패] status_code = 400
         {'detail': [ErrorDetail(string='등록되지 않은 사용자입니다.', code='invalid')]}
 
         self.fail_data_1(존재하지 않는 유저)로 테스트를 진행합니다.
-        '''
+        """
 
         response = self.client.post('/users/login/', self.fail_data_1)
 
@@ -78,12 +78,12 @@ class LoginOUTUserTest(APITestCase):
 
     def test_fail_login_wrong_password(self):
 
-        '''
+        """
         [실패] status_code = 400
         {'detail': [ErrorDetail(string='올바른 패스워드가 아닙니다.', code='invalid')]}
 
         self.fail_data_2(비밀번호 불일치)로 테스트를 진행합니다.
-        '''
+        """
 
         response = self.client.post('/users/login/', self.fail_data_2)
 
@@ -95,12 +95,12 @@ class LoginOUTUserTest(APITestCase):
 
     def test_success_logout(self):
 
-        '''
+        """
         [성공] status_code = 200
         {'detail': '로그아웃되었습니다.'}
 
         self.success_data에 유효한 refresh_token을 넣어서 로그아웃을 테스트합니다.
-        '''
+        """
 
         response = self.client.post('/users/login/', self.success_data)
         refresh_token = response.data['refresh_token']
@@ -116,12 +116,12 @@ class LoginOUTUserTest(APITestCase):
 
     def test_fail_logout(self):
 
-        '''
+        """
         [실패] status_code = 500
         {'detail': 'An error has occurred.'}
 
         올바르지 않은 refresh_token을 넣어서 로그아웃을 테스트합니다.
-        '''
+        """
 
         response = self.client.post('/users/login/', self.success_data)
         refresh_token = 'wrong_refresh_token'
