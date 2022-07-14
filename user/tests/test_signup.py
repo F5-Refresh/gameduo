@@ -22,7 +22,7 @@ class SignUpTest(APITestCase):
         data = {'account':'chacha','password':'chacha1234','nickname':'chachacha'}
         response = self.client.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.json(), {"message": "회원가입이 완료 되었습니다."})   
+        self.assertEqual(response.data, {"message": "회원가입이 완료 되었습니다."})   
         self.assertEqual(User.objects.filter(account='chacha').exists(), True)
 
         
@@ -35,7 +35,7 @@ class SignUpTest(APITestCase):
         data = {'account':'hoho','password':'hoho','nickname':'hohoho'}
         response = self.client.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.json(), {'password': ['비밀번호는 8~15자의 영소문자와 숫자로 이루어져야합니다.']})
+        self.assertEqual(response.data, {'password': ['비밀번호는 8~15자의 영소문자와 숫자로 이루어져야합니다.']})
 
         
     def test_fail_create_signup_with_existed_account(self):
@@ -49,7 +49,7 @@ class SignUpTest(APITestCase):
 
         response = self.client.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.json(), {'account': ['user의 account은/는 이미 존재합니다.']})
+        self.assertEqual(response.data, {'account': ['user의 account은/는 이미 존재합니다.']})
 
     def test_fail_create_signup_with_existed_nickname(self):
         """
@@ -62,4 +62,4 @@ class SignUpTest(APITestCase):
 
         response = self.client.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.json(), {'nickname': ['user의 nickname은/는 이미 존재합니다.']})
+        self.assertEqual(response.data, {'nickname': ['user의 nickname은/는 이미 존재합니다.']})
