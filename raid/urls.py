@@ -1,6 +1,6 @@
 from django.urls import path
 
-from raid.view.views import BossRaidView
+from raid.views.boss_raid_view import BossRaidView
 from raid.views.raid_status_search import RaidStatusSearchView
 
 from .views import raid_ranking
