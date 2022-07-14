@@ -1,9 +1,9 @@
-from raid import models
 from rest_framework import serializers
 
 
 class BossRaidRakingSerializer(serializers.Serializer):
     rank = serializers.IntegerField()
+    account = serializers.CharField()
     nickname = serializers.CharField()
     total_score = serializers.IntegerField()
 
