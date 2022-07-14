@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from raid.models import RaidHistory
-from rest_framework.status import HTTP_200_OK, HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND
+from rest_framework.status import HTTP_200_OK, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND
 from rest_framework.test import APIClient, APITestCase
 from user.models import User
 
@@ -148,7 +148,7 @@ class UserSearchTest(APITestCase):
         url = '/users/search/test-user1'
         response = self.client.get(url, format='json')
 
-        self.assertEqual(response.status_code, HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, HTTP_401_UNAUTHORIZED)
         self.assertEqual(response.json(), {'detail': '자격 인증데이터(authentication credentials)가 제공되지 않았습니다.'})
 
     def test_fail_user_search_due_to_not_existed_user(self):
