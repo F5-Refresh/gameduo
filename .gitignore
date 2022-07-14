@@ -430,3 +430,4 @@ zsdoc/data
 .vscode
 data
 dump.rdb
+cache
