@@ -46,7 +46,9 @@ class RaidRankingSearchTest(APITestCase):
         return response.data['access_token']
 
     def test_sucess_searching_ranking_with_access_token(self):
-        # token decode하여 유저 id를 추출하고 top랭킹과 유저 ranking을 반환 (200)
+        """
+        token decode하여 유저 id를 추출하고 top랭킹과 유저 ranking을 반환 (200)
+        """
 
         access_token = self.return_access_token('test-user1', 'testPassword1!')
 
@@ -71,7 +73,9 @@ class RaidRankingSearchTest(APITestCase):
                 self.assertEqual(ranking_data, response_data['my_ranking'])
 
     def test_sucess_searching_ranking_with_access_token(self):
-        # 잘몬된 token을 주고 자격인증 실패 반화 (401)
+        """
+        잘몬된 token을 주고 자격인증 실패 반화 (401)
+        """
         access_token = self.return_access_token('test-user1', 'testPassword1!')
 
         headers = {"HTTP_AUTHORIZATION": f"Bearer {access_token}wrong"}
