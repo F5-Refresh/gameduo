@@ -10,4 +10,4 @@ class RaidStatusSearchSerializer(serializers.Serializer):
     """
 
     can_enter = serializers.BooleanField(allow_null=True)
-    entered_user_id = serializers.CharField(max_length=50, allow_null=True)
+    entered_user_id = serializers.UUIDField(allow_null=True)

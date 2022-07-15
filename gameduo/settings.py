@@ -61,8 +61,9 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt.token_blacklist',
-    'dj_rest_auth',
     'rest_framework_simplejwt.authentication',
+    'dj_rest_auth',
+    'background_task',
 ]
 
 INSTALLED_APPS = (
@@ -73,7 +74,6 @@ INSTALLED_APPS = (
         'django.contrib.sessions',
         'django.contrib.messages',
         'django.contrib.staticfiles',
-        'background_task',
     ]
     + THIRD_PARTY_APPS
     + PROJECT_APPS
