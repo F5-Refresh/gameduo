@@ -73,6 +73,7 @@ INSTALLED_APPS = (
         'django.contrib.sessions',
         'django.contrib.messages',
         'django.contrib.staticfiles',
+        'background_task',
     ]
     + THIRD_PARTY_APPS
     + PROJECT_APPS
