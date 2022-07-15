@@ -429,3 +429,5 @@ zsdoc/data
 .env
 .vscode
 data
+dump.rdb
+cache
