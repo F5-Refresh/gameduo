@@ -2,8 +2,6 @@ import time
 
 from django.core.cache import cache
 from raid.models import RaidHistory
-
-# Create your tests here.
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 from user.models import User
