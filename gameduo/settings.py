@@ -73,6 +73,7 @@ INSTALLED_APPS = (
         'django.contrib.sessions',
         'django.contrib.messages',
         'django.contrib.staticfiles',
+        'background_task',
     ]
     + THIRD_PARTY_APPS
     + PROJECT_APPS
@@ -170,6 +171,16 @@ DATABASES = {
         'PASSWORD': get_env_variable('MYSQL_ROOT_PASSWORD'),
         'HOST': 'localhost',
         'PORT': get_env_variable('MYSQL_TCP_PORT'),
+    }
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",  # 1번 DB 사용
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
     }
 }
 
