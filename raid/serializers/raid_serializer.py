@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 
 class BossRaidRakingSerializer(serializers.Serializer):
-    rank = serializers.IntegerField()
+    rank = serializers.IntegerField(allow_null=True)
     account = serializers.CharField()
     nickname = serializers.CharField()
     total_score = serializers.IntegerField()

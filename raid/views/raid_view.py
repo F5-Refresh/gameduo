@@ -52,7 +52,7 @@ class RaidView(APIView):
         """
         raid_history = get_object_or_404(RaidHistory, user=request.user.id, end_time=None)
 
-        if bool(request.data.get('is_win')):
+        if bool(request.data.get('is_win') == 'true'):
             if (score := cache.get(f'level{raid_history.level}')) == None:
                 return Response({'detail': '레벨이 존재하지 않습니다.'}, status=status.HTTP_404_NOT_FOUND)
             raid_history.score = score
