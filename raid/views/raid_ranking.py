@@ -34,9 +34,11 @@ class BossRaidRankingView(APIView):
 
         access token에서 user id를 추출, 해당 id로 top100과 자기자신의 ranking을 반환
         """
-        cache_data = cache.get('ranking')
-        if not cache_data:
-            try:
+
+        try:
+            top_ranking_cache_data = cache.get('top_ranking_list')
+            if not top_ranking_cache_data:
+
                 # Top100 ranking data
                 ranking_data = (
                     RaidHistory.objects.values('user')
@@ -48,22 +50,26 @@ class BossRaidRankingView(APIView):
                 for ranker in ranking_data:
                     ranker['rank'] = ranker['rank'] - 1
 
-                # header추출
-                # simple_JWT에서 request에 인증된 유저 정보를 담아 주지만 decode를 사용해보고 싶었음.
-                access_token = (
-                    request.META['HTTP_AUTHORIZATION'].split(' ')[1]
-                    if len(request.META['HTTP_AUTHORIZATION'].split(' ')) != 1
-                    else request.META['HTTP_AUTHORIZATION']
-                )
-                decoded = jwt.decode(access_token, SECRET_KEY, 'HS256')
+                total_ranking_serialize = BossRaidRakingSerializer(ranking_data, many=True).data
+                top_ranking_cache_data = total_ranking_serialize
+                cache.set('top_ranking_list', top_ranking_cache_data, 120)
 
-                """my ranking data
+            # header추출
+            # simple_JWT에서 request에 인증된 유저 정보를 담아 주지만 decode를 사용해보고 싶었음.
+            access_token = (
+                request.META['HTTP_AUTHORIZATION'].split(' ')[1]
+                if len(request.META['HTTP_AUTHORIZATION'].split(' ')) != 1
+                else request.META['HTTP_AUTHORIZATION']
+            )
+            decoded = jwt.decode(access_token, SECRET_KEY, 'HS256')
+            print(decoded)
+            """my ranking data
 
                 subquery를 사용하여 data searching이 필요하다고 판단
                 ORM만으로는 subquery의 한계가 있다고 생각하여 
                 row query로 작성
                 """
-                query_string = f"""
+            query_string = f"""
                         WITH ranking(user_id, total_score, `rank` ) AS (
 	                        SELECT
 		                        user_id,                                
@@ -82,27 +88,23 @@ class BossRaidRankingView(APIView):
 	                        LEFT JOIN ranking rk ON us.id = rk.user_id
                             WHERE us.id = '{decoded['user_id'].replace('-','')}'
                     """
-                with connection.cursor() as c:
-                    c.execute(query_string)
-                    # execute의 반환 type은 tuple 이기때문에 description에서 column 명을 추출 후 zip을 해주지 않으면 serializer에 적용을 시킬 수 가 없다
-                    columns = [col[0] for col in c.description]
-                    my_ranking = dict(zip(columns, c.fetchone()))
+            with connection.cursor() as c:
+                c.execute(query_string)
+                # execute의 반환 type은 tuple 이기때문에 description에서 column 명을 추출 후 zip을 해주지 않으면 serializer에 적용을 시킬 수 가 없다
+                columns = [col[0] for col in c.description]
+                my_ranking = dict(zip(columns, c.fetchone()))
 
-                my_ranking['rank'] = my_ranking['rank'] - 1
-                my_ranking = BossRaidRakingSerializer(my_ranking)
-                total_ranking_serialize = BossRaidRakingSerializer(ranking_data, many=True)
+            my_ranking['rank'] = my_ranking['rank'] - 1 if type(my_ranking['rank']) == int else None
 
-                cache_data = {
-                    'top_ranker_info_list': total_ranking_serialize.data,
-                    'my_ranking': my_ranking.data,
-                }
+            my_ranking = BossRaidRakingSerializer(my_ranking).data
 
-                ranking_info = BossRaidHistorySerializer(cache_data)
+            ranking_info = {
+                'top_ranker_info_list': top_ranking_cache_data,
+                'my_ranking': my_ranking,
+            }
 
-                cache_data = ranking_info.data
-                cache.set('ranking', cache_data, 300)
-            except Exception as ex:
-                print(ex)
-                raise APIException(detail='error occurred', code=ex)
+        except Exception as ex:
+            print(ex)
+            raise APIException(detail='error occurred', code=ex)
 
-        return Response(cache_data, status=status.HTTP_200_OK)
+        return Response({'ranking_info': ranking_info}, status=status.HTTP_200_OK)
