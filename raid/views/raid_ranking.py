@@ -36,13 +36,14 @@ class BossRaidRankingView(APIView):
         cache_data = cache.get('ranking')
         if not cache_data:
             try:
-                """Top100 ranking data"""
+                # Top100 ranking data
                 ranking_data = (
                     RaidHistory.objects.values('user')
                     .annotate(total_score=Sum('score'), nickname=F('user__nickname'), account=F('user__account'))
                     .annotate(rank=Window(expression=Rank(), order_by=F('total_score').desc()))
                 )[:100]
                 # header추출
+                # simple_JWT에서 request에 인증된 유저 정보를 담아 주지만 decode를 사용해보고 싶었음.
                 access_token = (
                     request.META['HTTP_AUTHORIZATION'].split(' ')[1]
                     if len(request.META['HTTP_AUTHORIZATION'].split(' ')) != 1
