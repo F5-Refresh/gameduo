@@ -1,11 +1,8 @@
-import threading
-import time
-from email import message
-
+from background_task import background
 from django.core.cache import cache
 from django.shortcuts import get_object_or_404
 from raid.models import RaidHistory
-from raid.serializers.boss_raid_serializer import BossRaidHistorySerializer
+from raid.serializers.raid_serializer import RaidHistorySerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
@@ -13,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
-class BossRaidView(APIView):
+class RaidView(APIView):
 
     """보스레이드 API 뷰
     Writer: 이동연
@@ -26,7 +23,7 @@ class BossRaidView(APIView):
     permission_classes = [IsAuthenticated]
 
     @api_view(['POST'])
-    def start_boss_raid(request):
+    def start_raid(request):
 
         """
         보스레이드의 참여에 대한 액션입니다.
@@ -37,46 +34,44 @@ class BossRaidView(APIView):
 
         user = request.user
         level = request.data.get('level')
-        boss_raid_history = BossRaidHistorySerializer(data={'user': user.id, 'level': level})
+        raid_history = RaidHistorySerializer(data={'user': user.id, 'level': level})
 
-        if boss_raid_history.is_valid():
-            boss_raid_history = boss_raid_history.save()
+        if raid_history.is_valid():
+            raid_history = raid_history.save()
             setting_raid_status(False, user.id)
-            timemer = threading.Thread(target=game_timmer(boss_raid_history))  # 제한시간 후 자동 패배의 액션입니다.
-            timemer.setDaemon(True)
-            timemer.start()
+            game_timmer(raid_history.id)  # 제한시간이 지나면 자동으로 전투가 종료되는 스케줄링 입니다.
             return Response({'message': '유저가 레이드에 입장했습니다', 'is_entered': True}, status=status.HTTP_200_OK)
         else:
-            return Response(boss_raid_history.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(raid_history.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @api_view(['POST'])
-    def end_boss_raid(request):
+    def end_raid(request):
 
         """
         보스레이드의 종료에 대한 액션입니다.
         """
-
-        boss_raid_history = get_object_or_404(RaidHistory, user=request.user.id, end_time=None)
+        raid_history = get_object_or_404(RaidHistory, user=request.user.id, end_time=None)
 
         if bool(request.data.get('is_win')):
-            if (score := cache.get(f'level{boss_raid_history.level}')) == None:
+            if (score := cache.get(f'level{raid_history.level}')) == None:
                 return Response({'detail': '레벨이 존재하지 않습니다.'}, status=status.HTTP_404_NOT_FOUND)
-            boss_raid_history.score = score
-
+            raid_history.score = score
         setting_raid_status(can_enter=True)
-        boss_raid_history.game_over()
+        raid_history.game_over()
 
         return Response(
-            {'message': '레이드가 정상적으로 종료 되었습니다.', 'boss_raid_history_id': boss_raid_history.id},
+            {'message': '레이드가 정상적으로 종료 되었습니다.', 'raid_history_id': raid_history.id},
             status=status.HTTP_200_OK,
         )
 
 
-def game_timmer(boss_raid_history):
-    time.sleep(cache.get('limit_time'))
+@background(schedule=cache.get('limit_time'))
+def game_timmer(raid_history_id):
+    raid_history = RaidHistory.objects.get(id=raid_history_id)
+    print(f"{raid_history.user.nickname}님의 레이드가 자동 종료되었습니다.")
     if not cache.get('can_enter'):  # 제한시간이 지나도 레이드가 끝나지 않을경우 자동으로 패배처리를 합니다.
         setting_raid_status(can_enter=True)
-        boss_raid_history.game_over()
+        raid_history.game_over()
 
 
 def setting_raid_status(can_enter, user_id=None):
