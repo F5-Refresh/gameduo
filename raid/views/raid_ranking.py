@@ -1,4 +1,5 @@
 from base64 import b64decode
+from os import readlink
 
 import jwt
 from django.core.cache import cache
@@ -29,7 +30,7 @@ class BossRaidRankingView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        """ranking get func
+        """get Top ranking And My ranking API
 
         access token에서 user id를 추출, 해당 id로 top100과 자기자신의 ranking을 반환
         """
@@ -41,7 +42,12 @@ class BossRaidRankingView(APIView):
                     RaidHistory.objects.values('user')
                     .annotate(total_score=Sum('score'), nickname=F('user__nickname'), account=F('user__account'))
                     .annotate(rank=Window(expression=Rank(), order_by=F('total_score').desc()))
-                )[:100]
+                )[:10]
+
+                # MySql의 RANK함수는 1부터 시작하지만 요구사항에 따라 0부터 시작되어야하기때문에
+                for ranker in ranking_data:
+                    ranker['rank'] = ranker['rank'] - 1
+
                 # header추출
                 # simple_JWT에서 request에 인증된 유저 정보를 담아 주지만 decode를 사용해보고 싶었음.
                 access_token = (
@@ -70,8 +76,8 @@ class BossRaidRankingView(APIView):
                                 us.id,
                                 us.account,
                                 us.nickname,
-                                CASE WHEN rk.`rank` is null THEN 0 WHEN rk.`rank` is not null then rk.`rank` END AS `rank`,
-                                CASE WHEN rk.total_score is null THEN 0 WHEN rk.total_score is not null then rk.total_score END AS total_score
+                                rk.`rank` ,
+                                rk.total_score
                         FROM `user` us
 	                        LEFT JOIN ranking rk ON us.id = rk.user_id
                             WHERE us.id = '{decoded['user_id'].replace('-','')}'
@@ -82,6 +88,7 @@ class BossRaidRankingView(APIView):
                     columns = [col[0] for col in c.description]
                     my_ranking = dict(zip(columns, c.fetchone()))
 
+                my_ranking['rank'] = my_ranking['rank'] - 1
                 my_ranking = BossRaidRakingSerializer(my_ranking)
                 total_ranking_serialize = BossRaidRakingSerializer(ranking_data, many=True)
 
