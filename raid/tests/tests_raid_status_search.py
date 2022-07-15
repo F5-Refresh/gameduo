@@ -30,7 +30,7 @@ class RaidStatusSearchTest(APITestCase):
         method: GET
         """
 
-        url = '/raids/status-search'
+        url = '/raid/status-search'
         response = self.client.get(url, format='json')
 
         self.assertEqual(response.status_code, HTTP_200_OK)
@@ -48,7 +48,7 @@ class RaidStatusSearchTest(APITestCase):
 
         self.client = APIClient()
 
-        url = '/raids/status-search'
+        url = '/raid/status-search'
         response = self.client.get(url, format='json')
 
         self.assertEqual(response.status_code, HTTP_401_UNAUTHORIZED)
