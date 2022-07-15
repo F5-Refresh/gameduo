@@ -21,8 +21,10 @@ class UserSearchView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    offset = openapi.Parameter('offset', openapi.IN_QUERY, required=True, pattern='?offset=', type=openapi.TYPE_STRING)
-    limit = openapi.Parameter('limit', openapi.IN_QUERY, required=True, pattern='?limit=', type=openapi.TYPE_STRING)
+    offset = openapi.Parameter(
+        'offset', openapi.IN_QUERY, required=False, pattern='?offset=', type=openapi.TYPE_STRING
+    )
+    limit = openapi.Parameter('limit', openapi.IN_QUERY, required=False, pattern='?limit=', type=openapi.TYPE_STRING)
     account = openapi.Parameter('account', openapi.IN_PATH, required=True, type=openapi.TYPE_STRING)
 
     @swagger_auto_schema(responses={200: UserSearchSchema}, manual_parameters=[account, offset, limit])
