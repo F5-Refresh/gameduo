@@ -7,7 +7,7 @@ from rest_framework.test import APIClient, APITestCase
 from user.models import User
 
 
-class LoginOUTUserTest(APITestCase):
+class BossRaidTest(APITestCase):
 
     """
     Writer: 이동연
