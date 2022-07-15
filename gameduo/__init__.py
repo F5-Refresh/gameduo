@@ -1,7 +1,14 @@
 import json
+import os
 
 import requests
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gameduo.settings")
+
 from django.core.cache import cache
+from django.core.wsgi import get_wsgi_application
+
+application = get_wsgi_application()
 
 # 장고 서버가 켜질때 자동으로 실행하며 json데이터를 redis에 저장합니다.
 data = json.loads(requests.get('https://dmpilf5svl7rv.cloudfront.net/assignment/backend/bossRaidData.json').content)

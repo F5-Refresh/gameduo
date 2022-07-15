@@ -169,7 +169,7 @@ DATABASES = {
         'NAME': get_env_variable('MYSQL_DATABASE'),
         'USER': 'root',
         'PASSWORD': get_env_variable('MYSQL_ROOT_PASSWORD'),
-        'HOST': 'localhost',
+        'HOST': 'db',
         'PORT': get_env_variable('MYSQL_TCP_PORT'),
     }
 }
@@ -177,7 +177,7 @@ DATABASES = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379",  # 1번 DB 사용
+        "LOCATION": "redis://redis:6379",  # 1번 DB 사용
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
